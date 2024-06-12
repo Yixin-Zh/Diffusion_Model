@@ -87,7 +87,7 @@ def main():
     name = "DDPM"
     logging_setting(name)
     lr = 1e-3
-    batch_size = 2
+    batch_size = 16
     epochs = 100
     dataloader, _ = get_data(batch_size, 28)
     model = UNet(c_in=1, c_out=1,).cuda()
@@ -114,6 +114,7 @@ def main():
                 logger.add_images("Predicted Noise", predicted_noise, epoch*len(dataloader)+i)
                 logger.add_images("Noise", noise, epoch*len(dataloader)+i)
 
+
         logger.add_scalar("Loss", loss_val.item(), epoch)
         if not os.path.exists(os.path.join("models", name)):
             os.makedirs(os.path.join("models", name))
@@ -121,7 +122,7 @@ def main():
         # save img
         if not os.path.exists(os.path.join("results", name)):
             os.makedirs(os.path.join("results", name))
-        x = ddpm.sample(model, n = batch_size/2)
+        x = ddpm.sample(model, n = int(batch_size/2))
         torchvision.utils.save_image(x.cpu(), os.path.join("results", name, f"sample_epoch{epoch}.png"), nrow=8)
 if __name__ == '__main__':
     main()

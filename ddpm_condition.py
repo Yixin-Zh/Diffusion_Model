@@ -70,9 +70,9 @@ class DDPM_Condition:
                 if cfg > 0:
                     uncondition_predicted_noise = model(x, t, None)
                     predicted_noise = torch.lerp(uncondition_predicted_noise, predicted_noise, cfg)
-                alpha = self.alpha[t].view(-1, 1, 1, 1)
-                alpha_hat = self.alpha_hat[t].view(-1, 1, 1, 1)
-                beta = self.beta[t].view(-1, 1, 1, 1)
+                alpha = self.alpha[t].view(-1, 1, 1, 1).to(self.device)
+                alpha_hat = self.alpha_hat[t].view(-1, 1, 1, 1).to(self.device)
+                beta = self.beta[t].view(-1, 1, 1, 1).to(self.device)
                 if i > 1:
                     z = torch.randn_like(x)
                 else:
@@ -121,6 +121,8 @@ def main():
                 logger.add_images("Noised Image", noised_x, epoch*len(dataloader)+i)
                 logger.add_images("Predicted Noise", predicted_noise, epoch*len(dataloader)+i)
                 logger.add_images("Noise", noise, epoch*len(dataloader)+i)
+            if i>10:
+                break
 
         logger.add_scalar("Loss", loss_val.item(), epoch)
         if not os.path.exists(os.path.join("models", name)):
