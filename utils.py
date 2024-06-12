@@ -6,12 +6,8 @@ from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader
 
 def logging_setting(run_name):
-    if not os.path.exists("model"):
-        os.mkdir("model")
     if not os.path.exists("results"):
         os.mkdir("results")
-    if not os.path.exists(os.path.join("model", run_name)):
-        os.mkdir(os.path.join("model", run_name))
     if not os.path.exists(os.path.join("results", run_name)):
         os.mkdir(os.path.join("results", run_name))
 

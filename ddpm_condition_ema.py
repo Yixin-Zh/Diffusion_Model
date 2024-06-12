@@ -109,8 +109,7 @@ class DDPM_Condition:
                     z = torch.zeros_like(x)
                 x = 1./torch.sqrt(alpha) * (x - (1-alpha)/(torch.sqrt(1-alpha_hat))*predicted_noise) + torch.sqrt(beta)*z
         model.train()
-        x = (x.clamp(-1,1)+1)/2
-        x = (x * 255).type(torch.uint8)
+
         return x
 
 
@@ -159,10 +158,15 @@ def main():
                 logger.add_images("Noised Image", noised_x, epoch*len(dataloader)+i)
                 logger.add_images("Predicted Noise", predicted_noise, epoch*len(dataloader)+i)
                 logger.add_images("Noise", noise, epoch*len(dataloader)+i)
+
         logger.add_scalar("Loss", loss_val.item(), epoch)
-        torch.save(model.state_dict(), os.path.join("models", name, "model.pth"))
+        if not os.path.exists(os.path.join("models", name)):
+            os.makedirs(os.path.join("models", name))
+        torch.save(model.state_dict(), os.path.join("models", name, f"model_epoch{epoch}.pth"))
         # save img
-        x = ddpm.sample(model, 64)
-        torchvision.utils.save_image(x, os.path.join("results", name, "sample.png"), nrow=8)
+        if not os.path.exists(os.path.join("results", name)):
+            os.makedirs(os.path.join("results", name))
+        x = ddpm.sample(model, n=len(labels), labels=labels)
+        torchvision.utils.save_image(x.cpu(), os.path.join("results", name, f"sample_epoch{epoch}.png"), nrow=8)
 if __name__ == '__main__':
     main()
