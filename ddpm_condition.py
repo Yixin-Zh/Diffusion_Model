@@ -64,7 +64,7 @@ class DDPM_Condition:
             t = self.sample_time_step(n)
             x = torch.randn(n, 1, self.img_size, self.img_size).to(self.device)
             for i in tqdm(reversed(range(1, self.noise_step))):
-                t = (torch.ones(n)*i).float().to(self.device)
+                t = (torch.ones(n)*i).long().to(self.device)
 
                 predicted_noise = model(x, t, labels)
                 if cfg > 0:
